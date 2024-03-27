@@ -1,0 +1,27 @@
+﻿version: '3.4'
+
+services:
+  db:
+    image: "mcr.microsoft.com/mssql/server:2017-latest"
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=1Secure*Password1
+      - MSSQL_PID=Developer  # Specify the SQL Server edition if needed
+      - MSSQL_SA_PASSWORD=1Secure*Password1  # Specify the SA password again for SQL Server 2019 or later
+      - MSSQL_USER=myuser  # Your desired username
+      - MSSQL_PASSWORD=myuserpassword  # Your desired password
+    ports:
+      - "1433:1433"  # Port forwarding from host to container
+    volumes:
+      - db-data:/var/opt/mssql  # Mount a volume for persisting database data
+
+  animate-api:
+    image: ${DOCKER_REGISTRY-}animateapi
+    build:
+      context: .
+      dockerfile: AniMate-API/Dockerfile
+    depends_on:
+      - db
+
+volumes:
+  db-data:  # Volume definition for persisting database data
